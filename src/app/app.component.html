@@ -1,0 +1,28 @@
+<!-- <app-cases-report></app-cases-report> -->
+
+<input
+  type="file"
+  #csvReader
+  name="Upload CSV"
+  id="txtFileUpload"
+  (change)="uploadListener($event)"
+  accept=".csv"
+/>
+<input
+  *ngIf="data_array.length > 0"
+  type="button"
+  value="Process"
+  (click)="Check_CSV(header_array, data_array)"
+/>
+<table class="minimalistBlack" *ngIf="data_array.length > 0">
+  <thead>
+    <tr>
+      <th *ngFor="let head_col of header_array">{{ head_col }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of data_array">
+      <td *ngFor="let col of header_array">{{ data[col] }}</td>
+    </tr>
+  </tbody>
+</table>
