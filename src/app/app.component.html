@@ -1,5 +1,4 @@
-<!-- <app-cases-report></app-cases-report> -->
-
+<br /><br />
 <input
   type="file"
   #csvReader
@@ -9,11 +8,18 @@
   accept=".csv"
 />
 <input
-  *ngIf="data_array.length > 0"
+  *ngIf="isDataLoaded && !isDataProcessed"
   type="button"
   value="Process"
   (click)="Check_CSV(header_array, data_array)"
 />
+<input
+  *ngIf="isDataLoaded && isDataProcessed"
+  type="button"
+  value="Download"
+  (click)="Download_CSV(data_array)"
+/>
+<br /><br />
 <table class="minimalistBlack" *ngIf="data_array.length > 0">
   <thead>
     <tr>

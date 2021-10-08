@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +9,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 export class AppComponent implements OnInit {
 
   title = 'Angular7AppReadCSV';
+  isDataLoaded = false;
+  isDataProcessed = false;
 
   public header_array: any[] = [];
   public data_array: any[] = [];
@@ -15,6 +18,8 @@ export class AppComponent implements OnInit {
   @ViewChild('csvReader') csvReader: any;
 
   uploadListener($event: any): void {
+    this.isDataLoaded = false;
+    this.isDataProcessed = false;
 
     let files = $event.srcElement.files;
 
@@ -29,8 +34,7 @@ export class AppComponent implements OnInit {
 
         this.header_array = this.getHeaderArray(csvRecordsArray);
         this.data_array = this.getDataRecordsArrayFromCSVFile(csvRecordsArray, this.header_array);
-        console.log(this.header_array)
-        console.log(this.data_array)
+        this.isDataLoaded = true
       };
 
       reader.onerror = function () {
@@ -88,7 +92,7 @@ export class AppComponent implements OnInit {
 
 
     if (this.check_CSV_Header(header_array, main1)) {
-      // alert('CSV of first type');
+
       let res_Year = []
       let data = data_array;
       let sum_Array_Violent = [];
@@ -101,7 +105,7 @@ export class AppComponent implements OnInit {
       let sum_Array_Larceny_Theft = []
       let sum_Array_Vehicle_Theft = []
       for (let i = 0; i < data.length; i++) {
-        // console.log(data[i]['Year'])
+
         if (i == 0) {
           res_Year.push(data[i]['Year'])
         }
@@ -129,7 +133,7 @@ export class AppComponent implements OnInit {
         for (let j = 0; j < data.length; j++) {
           let j_current_Year = data[j]['Year']
           if (i + 1 == res_Year.length) {
-            // console.log(data[j]['Year'])
+
             if (data[j]['Year'] <= res_Year[i] && max_Population < data[j]['Population']) {
               max_Population = data[j]['Population']
             }
@@ -208,31 +212,32 @@ export class AppComponent implements OnInit {
     }
     if (this.check_CSV_Header(header_array, main2)) {
 
-      var data_occupation = [];
-      for (var i = 0; i <= data_array.length - 1; i++) {
-        data_occupation.push(data_array[i]["occupation"])
+      let data_occupation = [];
+      for (let i = 0; i <= data_array.length - 1; i++) {
+        if (data_occupation.indexOf(data_array[i]["occupation"]) == -1) {
+          data_occupation.push(data_array[i]["occupation"])
+        }
       };
-      // console.log(data_occupation);
 
-      var data_occ;
-      data_occ = data_occupation.filter((x, i, data_occupation) => data_occupation.indexOf(x) === i);
-      data_occ.sort()
-      // console.log(data_occ)
+      let data_occ;
+      data_occ = data_occupation.sort()
 
       let age_max = [];
       let age_min = [];
       for (let i = 0; i <= data_occ.length; i++) {
-        // console.log(data_array[i]['occupation'])
         let array2: any | string = [];
         for (let j = 0; j < data_array.length - 1; j++) {
           if (data_occ[i] == data_array[j]['occupation']) {
             array2.push(data_array[j]['age']);
           }
         }
+
         let array2_number = array2.map(Number);
         age_max.push(Math.max(...array2_number));
         age_min.push(Math.min(...array2_number));
+
       }
+
       let output_Object_Array = []
       for (let i = 0; i < data_occ.length; i++) {
         let output_Obj: any = new Object()
@@ -243,12 +248,26 @@ export class AppComponent implements OnInit {
       }
       this.header_array = ["occupation", "min", "max"];
       this.data_array = output_Object_Array
-      console.log(this.header_array);
-      console.log(this.data_array);
     }
     if (this.check_CSV_Header(header_array, main3)) {
-      alert('CSV of third type');
+
+      data_array.sort(function (a: any, b: any) {
+        return a["Red Cards"] - b["Red Cards"] || a["Yellow Cards"] - b["Yellow Cards"] || b["Team"].localeCompare(a["Team"]);
+      }).reverse();
+
+
+      let output_Object_Array = []
+      for (let i = 0; i < data_array.length; i++) {
+        let output_Obj: any = new Object()
+        output_Obj["Team"] = data_array[i]["Team"];
+        output_Obj["Yellow Cards"] = data_array[i]["Yellow Cards"];
+        output_Obj["Red Cards"] = data_array[i]["Red Cards"];
+        output_Object_Array.push(output_Obj)
+      }
+      this.header_array = main3;
+      this.data_array = output_Object_Array
     }
+    this.isDataProcessed = true
   }
   check_CSV_Header(header_array: any[], main: any[]) {
     let bool_main = false
@@ -265,4 +284,21 @@ export class AppComponent implements OnInit {
     return bool_main
   }
 
+  Download_CSV(data: any) {
+    const replacer = (key: any, value: any) => value === null ? '' : value;
+    const header = Object.keys(data[0]);
+    let csv = data.map((row: { [x: string]: any; }) => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
+
+    csv.unshift(header.join(','));
+    let csvArray = csv.join('\r\n');
+
+    var blob = new Blob([csvArray], { type: 'text/csv' })
+    saveAs(blob, "myFile.csv");
+  }
+  isNum(val: any) {
+    return !isNaN(val)
+  }
+
 }
+
+
