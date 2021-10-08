@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -86,6 +85,7 @@ export class AppComponent implements OnInit {
     let main1 = ["Year", "Population", "Violent", "Property", "Murder", "Forcible_Rape", "Robbery", "Aggravated_assault", "Burglary", "Larceny_Theft", "Vehicle_Theft"]
     let main2 = ["age", "occupation"]
     let main3 = ["Team", "Yellow Cards", "Red Cards"]
+
 
     if (this.check_CSV_Header(header_array, main1)) {
       // alert('CSV of first type');
@@ -207,12 +207,48 @@ export class AppComponent implements OnInit {
 
     }
     if (this.check_CSV_Header(header_array, main2)) {
-      alert('CSV of second type');
+
+      var data_occupation = [];
+      for (var i = 0; i <= data_array.length - 1; i++) {
+        data_occupation.push(data_array[i]["occupation"])
+      };
+      // console.log(data_occupation);
+
+      var data_occ;
+      data_occ = data_occupation.filter((x, i, data_occupation) => data_occupation.indexOf(x) === i);
+      data_occ.sort()
+      // console.log(data_occ)
+
+      let age_max = [];
+      let age_min = [];
+      for (let i = 0; i <= data_occ.length; i++) {
+        // console.log(data_array[i]['occupation'])
+        let array2: any | string = [];
+        for (let j = 0; j < data_array.length - 1; j++) {
+          if (data_occ[i] == data_array[j]['occupation']) {
+            array2.push(data_array[j]['age']);
+          }
+        }
+        let array2_number = array2.map(Number);
+        age_max.push(Math.max(...array2_number));
+        age_min.push(Math.min(...array2_number));
+      }
+      let output_Object_Array = []
+      for (let i = 0; i < data_occ.length; i++) {
+        let output_Obj: any = new Object()
+        output_Obj['occupation'] = data_occ[i]
+        output_Obj['min'] = age_min[i]
+        output_Obj['max'] = age_max[i]
+        output_Object_Array.push(output_Obj)
+      }
+      this.header_array = ["occupation", "min", "max"];
+      this.data_array = output_Object_Array
+      console.log(this.header_array);
+      console.log(this.data_array);
     }
     if (this.check_CSV_Header(header_array, main3)) {
-      alert('CSV of third type')
+      alert('CSV of third type');
     }
-
   }
   check_CSV_Header(header_array: any[], main: any[]) {
     let bool_main = false
