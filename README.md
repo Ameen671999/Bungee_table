@@ -4,15 +4,15 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 # Install Node Package Manager
 
-Run 'npm install' to install node package manager.
+Run `npm install` to install node package manager.
 
 # Install Angular
 
-Run 'npm install -g @angular/cli' to install the latest version of angular.
+Run `npm install -g @angular/cli` to install the latest version of angular.
 
 # Install FileSaver.js
 
-Run 'npm install --save file-saver' and 'npm i --save-dev @types/file-saver' FileSaver.js is the solution to saving files on the client-side.
+Run `npm install --save file-saver` and `npm i --save-dev @types/file-saver` FileSaver.js is the solution to saving files on the client-side.
 
 ## Development server
 
